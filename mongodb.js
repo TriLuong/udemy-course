@@ -15,7 +15,9 @@ const databaseName = "udemy-course";
 
 MongoClient.connect(
   connectionURL,
-  { useNewUrlParser: true },
+  {
+    useNewUrlParser: true
+  },
   (error, client) => {
     if (error) {
       return console.log("Unable to connect to database!");

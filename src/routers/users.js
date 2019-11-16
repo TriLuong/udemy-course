@@ -5,11 +5,16 @@ const router = new express.Router();
 
 router.post("/users", async (req, res) => {
   const user = new usersModel(req.body);
+  console.log("post user", user);
   try {
     await user.save();
     res.send(user);
-  } catch {
-    res.status(500).send();
+  } catch (error) {
+    if (error.code === 11000) {
+      res.status(400).send({ code: 400, error: "Email has already existed." });
+    } else {
+      res.status(500).send({ code: 500, error: error.errmsg });
+    }
   }
 });
 
@@ -95,7 +100,7 @@ router.delete("/users/:id", async (req, res) => {
   }
 });
 
-router.post("/users/login", async (req, res) => {
+router.post("/auth/login", async (req, res) => {
   try {
     const user = await usersModel.findByCredentials(
       req.body.email,
