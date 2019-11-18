@@ -95,7 +95,7 @@ router.delete("/users/:id", async (req, res) => {
   }
 });
 
-router.post("/users/login", async (req, res) => {
+router.post("/auth/login", async (req, res) => {
   try {
     const user = await usersModel.findByCredentials(
       req.body.email,
@@ -104,7 +104,7 @@ router.post("/users/login", async (req, res) => {
     const token = await user.generateAuthToken();
     res.send({ user, token });
   } catch (error) {
-    res.status(400).send({ error });
+    res.status(400).send({ code: 400, error });
   }
 });
 
