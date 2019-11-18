@@ -36,8 +36,17 @@ router.get("/users", auth, async (req, res) => {
     //   }
     // })
     // .exec();
-    const total = users.length;
-    res.send({ users, total });
+    const totalItem = users.length;
+    const pageSize = req.query.limit;
+    let totalPage = 1;
+    if (totalItem > pageSize) {
+      totalItem = parseInt(totalItem / pageSize);
+      if (totalItem % pageSize !== 0) {
+        totalItem += 1;
+      }
+    }
+    const pageIndex = req.query.page;
+    res.send({ data: users, totalItem, pageSize, totalPage, pageIndex });
     // res.send(req.user);
   } catch {
     res.status(500).send();
