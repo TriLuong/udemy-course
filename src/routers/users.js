@@ -2,19 +2,19 @@ const express = require("express");
 const { usersModel } = require("../models");
 const { auth } = require("../middleware");
 const router = new express.Router();
+const { ResponseSuccess, ResponseError } = require("../common/ResponseMess");
+const { CheckPost } = require("../validator/usersValidator");
+const { check } = require("express-validator");
+const { ROLES } = require("../common/constants");
 
-router.post("/users", async (req, res) => {
+router.post("/users", CheckPost, async (req, res) => {
   const user = new usersModel(req.body);
-  console.log("post user", user);
+
   try {
     await user.save();
-    res.send(user);
-  } catch (error) {
-    if (error.code === 11000) {
-      res.status(400).send({ code: 400, error: "Email has already existed." });
-    } else {
-      res.status(500).send({ code: 500, error: error.errmsg });
-    }
+    ResponseSuccess(res, user);
+  } catch {
+    ResponseError(res, 400, "Email has already existed.");
   }
 });
 
@@ -41,8 +41,17 @@ router.get("/users", auth, async (req, res) => {
     //   }
     // })
     // .exec();
-    const total = users.length;
-    res.send({ users, total });
+    const totalItem = users.length;
+    const pageSize = req.query.limit;
+    let totalPage = 1;
+    if (totalItem > pageSize) {
+      totalItem = parseInt(totalItem / pageSize);
+      if (totalItem % pageSize !== 0) {
+        totalItem += 1;
+      }
+    }
+    const pageIndex = req.query.page;
+    res.send({ data: users, totalItem, pageSize, totalPage, pageIndex });
     // res.send(req.user);
   } catch {
     res.status(500).send();
@@ -64,13 +73,6 @@ router.get("/users/:id", async (req, res) => {
 
 router.patch("/users/:id", async (req, res) => {
   const updates = Object.keys(req.body);
-  const allowUpdates = ["name", "email", "password", "age"];
-  const isValidOperation = updates.every(update =>
-    allowUpdates.includes(update)
-  );
-  if (!isValidOperation) {
-    return res.status(400).send({ error: "Invalid updates" });
-  }
 
   try {
     const user = await usersModel.findById(req.params.id);
@@ -82,7 +84,7 @@ router.patch("/users/:id", async (req, res) => {
     // });
     res.send(user);
   } catch (error) {
-    res.status(400).send(error);
+    res.status(400).send({ code: 400, error });
   }
 });
 
@@ -107,9 +109,9 @@ router.post("/auth/login", async (req, res) => {
       req.body.password
     );
     const token = await user.generateAuthToken();
-    res.send({ user, token });
+    ResponseSuccess(res, { user, token });
   } catch (error) {
-    res.status(400).send({ error });
+    ResponseError(res, 400, error);
   }
 });
 
