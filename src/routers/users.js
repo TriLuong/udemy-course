@@ -2,6 +2,7 @@ const express = require("express");
 const { usersModel } = require("../models");
 const { auth } = require("../middleware");
 const router = new express.Router();
+const { ResponseSuccess, ResponseError } = require("../common/ResponseMess");
 
 router.post("/users", async (req, res) => {
   const user = new usersModel(req.body);
@@ -114,9 +115,9 @@ router.post("/auth/login", async (req, res) => {
       req.body.password
     );
     const token = await user.generateAuthToken();
-    res.send({ user, token });
+    ResponseSuccess(res, { user, token });
   } catch (error) {
-    res.status(400).send({ code: 400, error });
+    ResponseError(res, 400, error);
   }
 });
 
