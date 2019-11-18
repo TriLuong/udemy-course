@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 
-const connectionURL = "mongodb://127.0.0.1:27017/udemy-course-api";
+const connectionURL =
+  "mongodb+srv://triluong:studyhard5194@cluster0-0rlhg.mongodb.net/test?retryWrites=true&w=majority";
 
 mongoose.connect(connectionURL, {
   useNewUrlParser: true,
