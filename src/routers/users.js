@@ -5,6 +5,16 @@ const router = new express.Router();
 
 router.post("/users", async (req, res) => {
   const user = new usersModel(req.body);
+  // const allowUpdates = ["name", "email", "password"];
+  // const isValidOperation = updates.every(update =>
+  //   allowUpdates.includes(update)
+  // );
+  // if (!isValidOperation) {
+  //   return res
+  //     .status(400)
+  //     .send({ code: 400, message: "User need include name, email, password" });
+  // }
+
   try {
     await user.save();
     res.send(user);
@@ -68,13 +78,6 @@ router.get("/users/:id", async (req, res) => {
 
 router.patch("/users/:id", async (req, res) => {
   const updates = Object.keys(req.body);
-  const allowUpdates = ["name", "email", "password", "age"];
-  const isValidOperation = updates.every(update =>
-    allowUpdates.includes(update)
-  );
-  if (!isValidOperation) {
-    return res.status(400).send({ error: "Invalid updates" });
-  }
 
   try {
     const user = await usersModel.findById(req.params.id);
@@ -86,7 +89,7 @@ router.patch("/users/:id", async (req, res) => {
     // });
     res.send(user);
   } catch (error) {
-    res.status(400).send(error);
+    res.status(400).send({ code: 400, error });
   }
 });
 
