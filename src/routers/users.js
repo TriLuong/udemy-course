@@ -3,24 +3,18 @@ const { usersModel } = require("../models");
 const { auth } = require("../middleware");
 const router = new express.Router();
 const { ResponseSuccess, ResponseError } = require("../common/ResponseMess");
+const { CheckPost } = require("../validator/usersValidator");
+const { check } = require("express-validator");
+const { ROLES } = require("../common/constants");
 
-router.post("/users", async (req, res) => {
+router.post("/users", CheckPost, async (req, res) => {
   const user = new usersModel(req.body);
-  // const allowUpdates = ["name", "email", "password"];
-  // const isValidOperation = updates.every(update =>
-  //   allowUpdates.includes(update)
-  // );
-  // if (!isValidOperation) {
-  //   return res
-  //     .status(400)
-  //     .send({ code: 400, message: "User need include name, email, password" });
-  // }
 
   try {
     await user.save();
-    res.send(user);
+    ResponseSuccess(res, user);
   } catch {
-    res.status(500).send();
+    ResponseError(res, 400, "Email has already existed.");
   }
 });
 
