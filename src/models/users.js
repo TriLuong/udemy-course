@@ -69,7 +69,7 @@ userSchema.methods.toJSON = function() {
 userSchema.methods.generateAuthToken = async function() {
   const user = this;
   const token = jwt.sign({ _id: user._id.toString() }, "udemy-nodejs", {
-    expiresIn: "7 days"
+    expiresIn: "10h"
   });
   user.token = token;
   await user.save();
