@@ -58,7 +58,7 @@ router.get("/users", auth, async (req, res) => {
   }
 });
 
-router.get("/users/:id", async (req, res) => {
+router.get("/users/:id", auth, async (req, res) => {
   const _id = req.params.id;
   try {
     const user = await usersModel.findById(_id);
@@ -71,7 +71,7 @@ router.get("/users/:id", async (req, res) => {
   }
 });
 
-router.patch("/users/:id", async (req, res) => {
+router.patch("/users/:id", auth, async (req, res) => {
   const updates = Object.keys(req.body);
 
   try {
@@ -88,7 +88,7 @@ router.patch("/users/:id", async (req, res) => {
   }
 });
 
-router.delete("/users/:id", async (req, res) => {
+router.delete("/users/:id", auth, async (req, res) => {
   const _id = req.params.id;
 
   try {
@@ -109,7 +109,7 @@ router.post("/auth/login", async (req, res) => {
       req.body.password
     );
     const token = await user.generateAuthToken();
-    ResponseSuccess(res, { user, token });
+    ResponseSuccess(res, user);
   } catch (error) {
     ResponseError(res, 400, error);
   }

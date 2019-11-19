@@ -7,7 +7,7 @@ const auth = async (req, res, next) => {
     const decoded = jwt.verify(token, "udemy-nodejs");
     const user = await usersModel.findOne({
       _id: decoded._id,
-      "tokens.token": token
+      token: token
     });
     if (!user) {
       throw new Error();

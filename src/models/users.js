@@ -6,19 +6,19 @@ const jwt = require("jsonwebtoken");
 const userSchema = new mongoose.Schema(
   {
     role: {
-      type: String
-      // required: true
+      type: String,
+      required: true
     },
     name: {
       type: String,
-      // required: true,
+      required: true,
       trim: true
     },
     email: {
       type: String,
       trim: true,
       unique: true,
-      // required: true,
+      required: true,
       validate(value) {
         if (!validator.isEmail(value)) {
           throw new Error("Email is invalid!");
@@ -27,7 +27,7 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      // required: true,
+      required: true,
       minlength: 6,
       validate(value) {
         if (value.toLowerCase().includes("password")) {
@@ -35,14 +35,13 @@ const userSchema = new mongoose.Schema(
         }
       }
     },
-    tokens: [
-      {
-        token: {
-          type: String,
-          required: true
-        }
-      }
-    ]
+    phone: {
+      type: String,
+      required: true
+    },
+    token: {
+      type: String
+    }
   },
   {
     timestamps: true
@@ -54,7 +53,6 @@ userSchema.methods.toJSON = function() {
   const userObject = user.toObject();
 
   delete userObject.password;
-  delete userObject.tokens;
 
   return userObject;
 };
@@ -62,7 +60,7 @@ userSchema.methods.toJSON = function() {
 userSchema.methods.generateAuthToken = async function() {
   const user = this;
   const token = jwt.sign({ _id: user._id.toString() }, "udemy-nodejs");
-  user.tokens = user.tokens.concat({ token });
+  user.token = token;
   await user.save();
 
   return token;
