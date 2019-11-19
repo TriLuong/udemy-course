@@ -22,8 +22,8 @@ router.get("/users", auth, async (req, res) => {
   const match = {};
   const sort = {};
 
-  if (req.query.name) {
-    match.name = req.query.name || null;
+  if (req.query.role) {
+    match.role = req.query.role || null;
   }
 
   try {
