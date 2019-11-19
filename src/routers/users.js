@@ -7,7 +7,7 @@ const { CheckPost } = require("../validator/usersValidator");
 const { check } = require("express-validator");
 const { ROLES } = require("../common/constants");
 
-router.post("/users", CheckPost, async (req, res) => {
+router.post("/users", auth, async (req, res) => {
   const user = new usersModel(req.body);
 
   try {
