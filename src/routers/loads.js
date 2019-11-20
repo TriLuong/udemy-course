@@ -13,31 +13,28 @@ router.get("/loads", auth, async (req, res) => {
   try {
     let totalLoads = [];
     let statusArray = [];
+    let totalItem = 0;
     if (req.query.status) {
       match.status = req.query.status || null;
       statusArray = req.query.status.split(",");
+      totalLoads = await loadsModel.find({ status: statusArray });
+      totalItem = totalLoads.length;
 
-      await Promise.all(
-        statusArray.map(async status => {
-          const newLoad = await loadsModel.find({ status });
-          totalLoads = [...totalLoads, ...newLoad];
-          return totalLoads;
-        })
-      );
+      totalLoads = await loadsModel.find({ status: statusArray }, null, {
+        limit: parseInt(req.query.limit) || 10
+      });
     } else {
       totalLoads = await loadsModel.find({});
+      totalItem = totalLoads.length;
+
+      totalLoads = await loadsModel.find({}, null, {
+        limit: parseInt(req.query.limit) || 10
+      });
     }
+    console.log("loadsModel", loadsModel);
 
-    const loads = await loadsModel.find(match, null, {
-      limit: parseInt(req.query.limit) || 10
-    });
-
-    const totalItem = totalLoads.length;
     const pageSize = req.query.limit || 10;
-    let totalPage = parseInt(totalItem / pageSize);
-    if (totalItem % pageSize !== 0) {
-      totalPage += 1;
-    }
+    let totalPage = Math.ceil(totalItem / pageSize);
 
     const pageIndex = req.query.page;
     ResponseSuccess(res, {
