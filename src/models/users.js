@@ -7,42 +7,50 @@ const userSchema = new mongoose.Schema(
   {
     role: {
       type: String
-      // required: true
     },
     name: {
-      type: String,
-      // required: true,
-      trim: true
+      type: String
     },
     email: {
       type: String,
       trim: true,
       unique: true,
-      // required: true,
-      validate(value) {
-        if (!validator.isEmail(value)) {
-          throw new Error("Email is invalid!");
-        }
-      }
+      sparse: true
+      // validate(value) {
+      //   if (!validator.isEmail(value)) {
+      //     throw new Error("Email is invalid!");
+      //   }
+      // }
     },
     password: {
-      type: String,
-      // required: true,
-      minlength: 6,
-      validate(value) {
-        if (value.toLowerCase().includes("password")) {
-          throw new Error("Password is not CORRECT");
-        }
-      }
+      type: String
+      // validate(value) {
+      //   if (value.toLowerCase().includes("password")) {
+      //     throw new Error("Password is not CORRECT");
+      //   }
+      // }
     },
-    tokens: [
-      {
-        token: {
-          type: String,
-          required: true
-        }
-      }
-    ]
+    phone: {
+      type: String
+    },
+    role: {
+      type: String
+    },
+    truck: {
+      type: Boolean
+    },
+    available: {
+      type: Boolean
+    },
+    note: {
+      type: String
+    },
+    truckNumber: {
+      type: String
+    },
+    token: {
+      type: String
+    }
   },
   {
     timestamps: true
@@ -54,15 +62,16 @@ userSchema.methods.toJSON = function() {
   const userObject = user.toObject();
 
   delete userObject.password;
-  delete userObject.tokens;
 
   return userObject;
 };
 
 userSchema.methods.generateAuthToken = async function() {
   const user = this;
-  const token = jwt.sign({ _id: user._id.toString() }, "udemy-nodejs");
-  user.tokens = user.tokens.concat({ token });
+  const token = jwt.sign({ _id: user._id.toString() }, "udemy-nodejs", {
+    expiresIn: "2 days"
+  });
+  user.token = token;
   await user.save();
 
   return token;

@@ -1,6 +1,6 @@
 const express = require("express");
 require("./db/mongoose");
-const { userRouter } = require("./routers");
+const { userRouter, loadRouter } = require("./routers");
 const cors = require("cors");
 const app = express();
 const port = process.env.PORT || 8080;
@@ -15,21 +15,8 @@ const port = process.env.PORT || 8080;
 app.use(cors());
 app.use(express.json());
 app.use(userRouter);
+app.use(loadRouter);
 
 app.listen(port, () => {
   console.log("Server is up on port", port);
 });
-
-const jwt = require("jsonwebtoken");
-
-const myFunction = async () => {
-  const token = jwt.sign({ _id: "asfsdf" }, "udemy-nodejs", {
-    expiresIn: "7 days"
-  });
-  console.log(token);
-
-  const data = jwt.verify(token, "udemy-nodejs");
-  console.log(data);
-};
-
-myFunction();

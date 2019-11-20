@@ -7,31 +7,31 @@ const { CheckPost } = require("../validator/usersValidator");
 const { check } = require("express-validator");
 const { ROLES } = require("../common/constants");
 
-router.post("/users", CheckPost, async (req, res) => {
+router.post("/users", auth, async (req, res) => {
   const user = new usersModel(req.body);
 
   try {
     await user.save();
     ResponseSuccess(res, user);
-  } catch {
+  } catch (error) {
+    console.log(error);
     ResponseError(res, 400, "Email has already existed.");
   }
 });
 
 router.get("/users", auth, async (req, res) => {
   const match = {};
-  const sort = {};
+  const sort = { createdAt: -1 };
 
-  if (req.query.name) {
-    match.name = req.query.name || null;
+  if (req.query.role) {
+    match.role = req.query.role || null;
   }
 
   try {
+    const totalUsers = await usersModel.find();
     const users = await usersModel.find(match, null, {
-      limit: parseInt(req.query.limit),
-      sort: {
-        [req.query.sortBy]: req.query.sortType === "decs" ? -1 : 1
-      }
+      limit: parseInt(req.query.limit) || 10,
+      sort
     });
     // .populate({
     //   path: "users",
@@ -41,14 +41,11 @@ router.get("/users", auth, async (req, res) => {
     //   }
     // })
     // .exec();
-    const totalItem = users.length;
-    const pageSize = req.query.limit;
-    let totalPage = 1;
-    if (totalItem > pageSize) {
-      totalItem = parseInt(totalItem / pageSize);
-      if (totalItem % pageSize !== 0) {
-        totalItem += 1;
-      }
+    const totalItem = totalUsers.length;
+    const pageSize = req.query.limit || 10;
+    let totalPage = parseInt(totalItem / pageSize);
+    if (totalItem % pageSize !== 0) {
+      totalPage += 1;
     }
     const pageIndex = req.query.page;
     res.send({ data: users, totalItem, pageSize, totalPage, pageIndex });
@@ -58,7 +55,7 @@ router.get("/users", auth, async (req, res) => {
   }
 });
 
-router.get("/users/:id", async (req, res) => {
+router.get("/users/:id", auth, async (req, res) => {
   const _id = req.params.id;
   try {
     const user = await usersModel.findById(_id);
@@ -71,7 +68,7 @@ router.get("/users/:id", async (req, res) => {
   }
 });
 
-router.patch("/users/:id", async (req, res) => {
+router.patch("/users/:id", auth, async (req, res) => {
   const updates = Object.keys(req.body);
 
   try {
@@ -88,7 +85,7 @@ router.patch("/users/:id", async (req, res) => {
   }
 });
 
-router.delete("/users/:id", async (req, res) => {
+router.delete("/users/:id", auth, async (req, res) => {
   const _id = req.params.id;
 
   try {
@@ -109,7 +106,7 @@ router.post("/auth/login", async (req, res) => {
       req.body.password
     );
     const token = await user.generateAuthToken();
-    ResponseSuccess(res, { user, token });
+    ResponseSuccess(res, user);
   } catch (error) {
     ResponseError(res, 400, error);
   }
