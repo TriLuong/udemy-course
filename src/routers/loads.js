@@ -46,4 +46,41 @@ router.post("/loads", auth, async (req, res) => {
   }
 });
 
+router.get("/loads/:id", auth, async (req, res) => {
+  try {
+    const _id = req.params.id;
+    const load = await loadsModel.findById(_id);
+    if (!load) {
+      return ResponseError(res, 404, "Load is NOT FOUND");
+    }
+    ResponseSuccess(res, load);
+  } catch (error) {
+    ResponseError(res, 400, error);
+  }
+});
+
+router.patch("/loads/:id", auth, async (req, res) => {
+  const updates = Object.keys(req.body);
+  try {
+    const load = await loadsModel.findById(req.params.id);
+    updates.forEach(update => (load[update] = req.body[update]));
+    await load.save();
+    ResponseSuccess(res, load);
+  } catch (error) {
+    ResponseError(res, 400, error);
+  }
+});
+
+router.delete("/loads/:id", auth, async (req, res) => {
+  try {
+    const load = await loadsModel.findByIdAndDelete(req.params.id);
+    if (!load) {
+      return ResponseError(res, 404, "Load is NOT FOUND");
+    }
+    ResponseSuccess(res, "Delete successfully!");
+  } catch (error) {
+    ResponseError(res, 400, error);
+  }
+});
+
 module.exports = router;
