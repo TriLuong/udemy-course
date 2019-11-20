@@ -28,8 +28,9 @@ router.get("/users", auth, async (req, res) => {
   }
 
   try {
+    const totalUsers = await usersModel.find();
     const users = await usersModel.find(match, null, {
-      limit: parseInt(req.query.limit),
+      limit: parseInt(req.query.limit) || 10,
       sort: {
         [req.query.sortBy]: req.query.sortType === "decs" ? -1 : 1
       }
@@ -42,14 +43,11 @@ router.get("/users", auth, async (req, res) => {
     //   }
     // })
     // .exec();
-    const totalItem = users.length;
-    const pageSize = req.query.limit;
-    let totalPage = 1;
-    if (totalItem > pageSize) {
-      totalItem = parseInt(totalItem / pageSize);
-      if (totalItem % pageSize !== 0) {
-        totalItem += 1;
-      }
+    const totalItem = totalUsers.length;
+    const pageSize = req.query.limit || 10;
+    let totalPage = parseInt(totalItem / pageSize);
+    if (totalItem % pageSize !== 0) {
+      totalPage += 1;
     }
     const pageIndex = req.query.page;
     res.send({ data: users, totalItem, pageSize, totalPage, pageIndex });
