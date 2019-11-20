@@ -11,7 +11,23 @@ router.get("/loads", auth, async (req, res) => {
     match.status = req.query.status || null;
   }
   try {
-    const totalLoads = await loadsModel.find();
+    let totalLoads = [];
+    let statusArray = [];
+    if (req.query.status) {
+      match.status = req.query.status || null;
+      statusArray = req.query.status.split(",");
+
+      await Promise.all(
+        statusArray.map(async status => {
+          const newLoad = await loadsModel.find({ status });
+          totalLoads = [...totalLoads, ...newLoad];
+          return totalLoads;
+        })
+      );
+    } else {
+      totalLoads = await loadsModel.find({});
+    }
+
     const loads = await loadsModel.find(match, null, {
       limit: parseInt(req.query.limit) || 10
     });
@@ -25,7 +41,7 @@ router.get("/loads", auth, async (req, res) => {
 
     const pageIndex = req.query.page;
     ResponseSuccess(res, {
-      data: loads,
+      data: totalLoads,
       totalItem,
       pageSize,
       totalPage,
