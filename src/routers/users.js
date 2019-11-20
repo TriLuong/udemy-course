@@ -13,7 +13,8 @@ router.post("/users", auth, async (req, res) => {
   try {
     await user.save();
     ResponseSuccess(res, user);
-  } catch {
+  } catch (error) {
+    console.log(error);
     ResponseError(res, 400, "Email has already existed.");
   }
 });

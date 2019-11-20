@@ -15,19 +15,20 @@ const userSchema = new mongoose.Schema(
       type: String,
       trim: true,
       unique: true,
-      validate(value) {
-        if (!validator.isEmail(value)) {
-          throw new Error("Email is invalid!");
-        }
-      }
+      sparse: true
+      // validate(value) {
+      //   if (!validator.isEmail(value)) {
+      //     throw new Error("Email is invalid!");
+      //   }
+      // }
     },
     password: {
-      type: String,
-      validate(value) {
-        if (value.toLowerCase().includes("password")) {
-          throw new Error("Password is not CORRECT");
-        }
-      }
+      type: String
+      // validate(value) {
+      //   if (value.toLowerCase().includes("password")) {
+      //     throw new Error("Password is not CORRECT");
+      //   }
+      // }
     },
     phone: {
       type: String
