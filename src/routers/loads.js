@@ -21,14 +21,16 @@ router.get("/loads", auth, async (req, res) => {
       totalItem = totalLoads.length;
 
       totalLoads = await loadsModel.find({ status: statusArray }, null, {
-        limit: parseInt(req.query.limit) || 10
+        limit: parseInt(req.query.limit) || 10,
+        skip: parseInt((req.query.page - 1) * (req.query.limit || 10)) || 0
       });
     } else {
       totalLoads = await loadsModel.find({});
       totalItem = totalLoads.length;
 
       totalLoads = await loadsModel.find({}, null, {
-        limit: parseInt(req.query.limit) || 10
+        limit: parseInt(req.query.limit) || 10,
+        skip: parseInt((req.query.page - 1) * (req.query.limit || 10)) || 0
       });
     }
     console.log("loadsModel", loadsModel);
