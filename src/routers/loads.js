@@ -6,6 +6,9 @@ const { ResponseError, ResponseSuccess } = require("../common/ResponseMess");
 
 router.get("/loads", auth, async (req, res) => {
   const match = {};
+  const sort = {
+    createdAt: -1
+  };
 
   if (req.query.status) {
     match.status = req.query.status || null;
@@ -21,6 +24,7 @@ router.get("/loads", auth, async (req, res) => {
       totalItem = totalLoads.length;
 
       totalLoads = await loadsModel.find({ status: statusArray }, null, {
+        sort,
         limit: parseInt(req.query.limit) || 10,
         skip: parseInt((req.query.page - 1) * (req.query.limit || 10)) || 0
       });
@@ -29,6 +33,7 @@ router.get("/loads", auth, async (req, res) => {
       totalItem = totalLoads.length;
 
       totalLoads = await loadsModel.find({}, null, {
+        sort,
         limit: parseInt(req.query.limit) || 10,
         skip: parseInt((req.query.page - 1) * (req.query.limit || 10)) || 0
       });

@@ -21,7 +21,7 @@ router.post("/users", auth, async (req, res) => {
 
 router.get("/users", auth, async (req, res) => {
   const match = {};
-  const sort = {};
+  const sort = { createdAt: -1 };
 
   if (req.query.role) {
     match.role = req.query.role || null;
@@ -31,9 +31,7 @@ router.get("/users", auth, async (req, res) => {
     const totalUsers = await usersModel.find();
     const users = await usersModel.find(match, null, {
       limit: parseInt(req.query.limit) || 10,
-      sort: {
-        [req.query.sortBy]: req.query.sortType === "decs" ? -1 : 1
-      }
+      sort
     });
     // .populate({
     //   path: "users",
