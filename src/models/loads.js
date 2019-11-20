@@ -10,7 +10,8 @@ const loadSchema = new mongoose.Schema({
   loadedRail: String,
   status: String,
   appointmentTime: String,
-  reservation: String
+  reservation: String,
+  puName: String
 });
 
 const Loads = mongoose.model("Loads", loadSchema);
