@@ -12,7 +12,11 @@ const loadSchema = new mongoose.Schema(
     status: String,
     appointmentTime: String,
     reservation: String,
-    puName: String
+    puName: String,
+    driverId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User"
+    }
   },
   {
     timestamps: true

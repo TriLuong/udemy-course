@@ -48,6 +48,10 @@ const userSchema = new mongoose.Schema(
     truckNumber: {
       type: String
     },
+    // loads: {
+    //   type: mongoose.Schema.Types.ObjectId,
+    //   ref: "Loads"
+    // },
     token: {
       type: String
     }
@@ -56,6 +60,12 @@ const userSchema = new mongoose.Schema(
     timestamps: true
   }
 );
+
+userSchema.virtual("loads", {
+  ref: "Loads",
+  localField: "_id",
+  foreignField: "driverId"
+});
 
 userSchema.methods.toJSON = function() {
   const user = this;

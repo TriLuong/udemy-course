@@ -29,10 +29,13 @@ router.get("/users", auth, async (req, res) => {
 
   try {
     const totalUsers = await usersModel.find();
-    const users = await usersModel.find(match, null, {
-      limit: parseInt(req.query.limit) || 10,
-      sort
-    });
+    const users = await usersModel
+      .find(match, null, {
+        limit: parseInt(req.query.limit) || 10,
+        sort
+      })
+      .populate("loads");
+
     // .populate({
     //   path: "users",
     //   match,

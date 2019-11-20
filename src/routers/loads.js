@@ -21,24 +21,28 @@ router.get("/loads", auth, async (req, res) => {
       match.status = req.query.status || null;
       statusArray = req.query.status.split(",");
       totalLoads = await loadsModel.find({ status: statusArray });
+
       totalItem = totalLoads.length;
 
-      totalLoads = await loadsModel.find({ status: statusArray }, null, {
-        sort,
-        limit: parseInt(req.query.limit) || 10,
-        skip: parseInt((req.query.page - 1) * (req.query.limit || 10)) || 0
-      });
+      totalLoads = await loadsModel
+        .find({ status: statusArray }, null, {
+          sort,
+          limit: parseInt(req.query.limit) || 10,
+          skip: parseInt((req.query.page - 1) * (req.query.limit || 10)) || 0
+        })
+        .populate("driverId");
     } else {
       totalLoads = await loadsModel.find({});
       totalItem = totalLoads.length;
 
-      totalLoads = await loadsModel.find({}, null, {
-        sort,
-        limit: parseInt(req.query.limit) || 10,
-        skip: parseInt((req.query.page - 1) * (req.query.limit || 10)) || 0
-      });
+      totalLoads = await loadsModel
+        .find({}, null, {
+          sort,
+          limit: parseInt(req.query.limit) || 10,
+          skip: parseInt((req.query.page - 1) * (req.query.limit || 10)) || 0
+        })
+        .populate("driverId");
     }
-    console.log("loadsModel", loadsModel);
 
     const pageSize = req.query.limit || 10;
     let totalPage = Math.ceil(totalItem / pageSize);
@@ -59,6 +63,8 @@ router.get("/loads", auth, async (req, res) => {
 router.post("/loads", auth, async (req, res) => {
   const loads = new loadsModel(req.body);
   try {
+    await loads.populate("driverId").execPopulate();
+    // console.log(newLoads);
     await loads.save();
     ResponseSuccess(res, loads);
   } catch (error) {
