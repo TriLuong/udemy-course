@@ -8,3 +8,7 @@ mongoose.connect(connectionURL, {
   useCreateIndex: true,
   useUnifiedTopology: true
 });
+
+mongoose.connection.once("open", () => {
+  console.log("Connection Successful");
+});
