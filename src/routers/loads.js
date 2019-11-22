@@ -31,7 +31,8 @@ router.get("/loads", auth, async (req, res) => {
           skip: parseInt((req.query.page - 1) * (req.query.limit || 10)) || 0
         })
         .populate("driver")
-        .populate("rep");
+        .populate("rep")
+        .populate("chat");
     } else {
       totalLoads = await loadsModel.find({});
       totalItem = totalLoads.length;
@@ -43,7 +44,8 @@ router.get("/loads", auth, async (req, res) => {
           skip: parseInt((req.query.page - 1) * (req.query.limit || 10)) || 0
         })
         .populate("driver")
-        .populate("rep");
+        .populate("rep")
+        .populate("chat");
     }
 
     const pageSize = req.query.limit || 10;
@@ -69,6 +71,7 @@ router.post("/loads", auth, async (req, res) => {
     await loads
       .populate("driver")
       .populate("rep")
+      .populate("chat")
       .execPopulate();
     // console.log(newLoads);
     await loads.save();
@@ -84,7 +87,8 @@ router.get("/loads/:id", auth, async (req, res) => {
     const load = await loadsModel
       .findById(_id)
       .populate("driver")
-      .populate("rep");
+      .populate("rep")
+      .populate("chat");
     if (!load) {
       return ResponseError(res, 404, "Load is NOT FOUND");
     }
@@ -103,6 +107,7 @@ router.patch("/loads/:id", auth, async (req, res) => {
     load
       .populate("driver")
       .populate("rep")
+      .populate("chat")
       .execPopulate();
     await load.save();
     ResponseSuccess(res, load);

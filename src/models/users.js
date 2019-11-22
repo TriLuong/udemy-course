@@ -5,12 +5,8 @@ const jwt = require("jsonwebtoken");
 
 const userSchema = new mongoose.Schema(
   {
-    role: {
-      type: String
-    },
-    name: {
-      type: String
-    },
+    role: String,
+    name: String,
     email: {
       type: String,
       trim: true,
@@ -22,39 +18,14 @@ const userSchema = new mongoose.Schema(
       //   }
       // }
     },
-    password: {
-      type: String
-      // validate(value) {
-      //   if (value.toLowerCase().includes("password")) {
-      //     throw new Error("Password is not CORRECT");
-      //   }
-      // }
-    },
-    phone: {
-      type: String
-    },
-    role: {
-      type: String
-    },
-    truck: {
-      type: Boolean
-    },
-    available: {
-      type: Boolean
-    },
-    note: {
-      type: String
-    },
-    truckNumber: {
-      type: String
-    },
-    // loads: {
-    //   type: mongoose.Schema.Types.ObjectId,
-    //   ref: "Loads"
-    // },
-    token: {
-      type: String
-    }
+    password: String,
+    phone: String,
+    role: String,
+    truck: String,
+    available: String,
+    note: String,
+    truckNumber: String,
+    token: String
   },
   {
     timestamps: true

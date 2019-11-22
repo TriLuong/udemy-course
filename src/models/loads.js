@@ -20,6 +20,10 @@ const loadSchema = new mongoose.Schema(
     rep: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User"
+    },
+    chat: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Chat"
     }
   },
   {
