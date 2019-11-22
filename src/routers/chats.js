@@ -20,12 +20,18 @@ router.patch("/chats/:id", auth, async (req, res) => {
     if (!load.chat) {
       chat = new chatModel(req.body);
       load.chat = chat._id;
-      await load.save();
+      if (chat.status) {
+        load.status = chat.status;
+      }
     } else {
       const updates = Object.keys(req.body);
       chat = await chatModel.findById(load.chat);
       updates.forEach(update => (chat[update] = req.body[update]));
+      if (chat.status) {
+        load.status = chat.status;
+      }
     }
+    await load.save();
     await chat.save();
     ResponseSuccess(res, chat);
   } catch (error) {
