@@ -64,7 +64,7 @@ const userSchema = new mongoose.Schema(
 userSchema.virtual("loads", {
   ref: "Loads",
   localField: "_id",
-  foreignField: "driverId"
+  foreignField: "driver"
 });
 
 userSchema.methods.toJSON = function() {

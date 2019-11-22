@@ -13,7 +13,11 @@ const loadSchema = new mongoose.Schema(
     appointmentTime: String,
     reservation: String,
     puName: String,
-    driverId: {
+    driver: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User"
+    },
+    rep: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User"
     }

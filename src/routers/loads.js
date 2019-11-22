@@ -30,7 +30,8 @@ router.get("/loads", auth, async (req, res) => {
           limit: parseInt(req.query.limit) || 10,
           skip: parseInt((req.query.page - 1) * (req.query.limit || 10)) || 0
         })
-        .populate("driverId");
+        .populate("driver")
+        .populate("rep");
     } else {
       totalLoads = await loadsModel.find({});
       totalItem = totalLoads.length;
@@ -41,7 +42,8 @@ router.get("/loads", auth, async (req, res) => {
           limit: parseInt(req.query.limit) || 10,
           skip: parseInt((req.query.page - 1) * (req.query.limit || 10)) || 0
         })
-        .populate("driverId");
+        .populate("driver")
+        .populate("rep");
     }
 
     const pageSize = req.query.limit || 10;
@@ -63,7 +65,11 @@ router.get("/loads", auth, async (req, res) => {
 router.post("/loads", auth, async (req, res) => {
   const loads = new loadsModel(req.body);
   try {
-    await loads.populate("driverId").execPopulate();
+    loads.status = req.body.driver ? "AssignedNotDelivered" : "New";
+    await loads
+      .populate("driver")
+      .populate("rep")
+      .execPopulate();
     // console.log(newLoads);
     await loads.save();
     ResponseSuccess(res, loads);
@@ -75,7 +81,10 @@ router.post("/loads", auth, async (req, res) => {
 router.get("/loads/:id", auth, async (req, res) => {
   try {
     const _id = req.params.id;
-    const load = await loadsModel.findById(_id);
+    const load = await loadsModel
+      .findById(_id)
+      .populate("driver")
+      .populate("rep");
     if (!load) {
       return ResponseError(res, 404, "Load is NOT FOUND");
     }
@@ -90,6 +99,11 @@ router.patch("/loads/:id", auth, async (req, res) => {
   try {
     const load = await loadsModel.findById(req.params.id);
     updates.forEach(update => (load[update] = req.body[update]));
+    // load.status = req.body.driver ? "AssignedNotDelivered" : "New";
+    load
+      .populate("driver")
+      .populate("rep")
+      .execPopulate();
     await load.save();
     ResponseSuccess(res, load);
   } catch (error) {
