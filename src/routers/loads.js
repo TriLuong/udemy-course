@@ -18,34 +18,54 @@ router.get("/loads", auth, async (req, res) => {
     let statusArray = [];
     let totalItem = 0;
     if (req.query.status) {
-      match.status = req.query.status || null;
+      match.status = req.query.status;
       statusArray = req.query.status.split(",");
-      totalLoads = await loadsModel.find({ status: statusArray });
 
+      if (req.user.role === "Admin") {
+        totalLoads = await loadsModel
+          .find({ status: statusArray }, null, {
+            sort,
+            limit: parseInt(req.query.limit) || 10,
+            skip: parseInt((req.query.page - 1) * (req.query.limit || 10)) || 0
+          })
+          .populate("driver")
+          .populate("rep")
+          .populate("chat");
+      } else if (req.user.role === "Driver") {
+        totalLoads = await loadsModel
+          .find({ status: statusArray, driver: req.user._id }, null, {
+            sort,
+            limit: parseInt(req.query.limit) || 10,
+            skip: parseInt((req.query.page - 1) * (req.query.limit || 10)) || 0
+          })
+          .populate("driver")
+          .populate("rep")
+          .populate("chat");
+      }
       totalItem = totalLoads.length;
-
-      totalLoads = await loadsModel
-        .find({ status: statusArray }, null, {
-          sort,
-          limit: parseInt(req.query.limit) || 10,
-          skip: parseInt((req.query.page - 1) * (req.query.limit || 10)) || 0
-        })
-        .populate("driver")
-        .populate("rep")
-        .populate("chat");
     } else {
-      totalLoads = await loadsModel.find({});
+      if (req.user.role === "Admin") {
+        totalLoads = await loadsModel
+          .find({}, null, {
+            sort,
+            limit: parseInt(req.query.limit) || 10,
+            skip: parseInt((req.query.page - 1) * (req.query.limit || 10)) || 0
+          })
+          .populate("driver")
+          .populate("rep")
+          .populate("chat");
+      } else if (req.user.role === "Driver") {
+        totalLoads = await loadsModel
+          .find({ driver: req.user._id }, null, {
+            sort,
+            limit: parseInt(req.query.limit) || 10,
+            skip: parseInt((req.query.page - 1) * (req.query.limit || 10)) || 0
+          })
+          .populate("driver")
+          .populate("rep")
+          .populate("chat");
+      }
       totalItem = totalLoads.length;
-
-      totalLoads = await loadsModel
-        .find({}, null, {
-          sort,
-          limit: parseInt(req.query.limit) || 10,
-          skip: parseInt((req.query.page - 1) * (req.query.limit || 10)) || 0
-        })
-        .populate("driver")
-        .populate("rep")
-        .populate("chat");
     }
 
     const pageSize = req.query.limit || 10;
